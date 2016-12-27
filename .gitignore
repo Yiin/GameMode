@@ -1,1 +1,4 @@
 GameMode.sublime-*
+server_log.txt
+logs/
+*.amx

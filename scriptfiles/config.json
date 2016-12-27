@@ -1,0 +1,11 @@
+{
+    "mysql": {
+        "host": "localhost",
+        "database": "gamemode",
+        "user": "root",
+        "password": ""
+    },
+    "start": {
+    	"create-default-vehicles-for-jobs": "0"
+    }
+}
