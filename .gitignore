@@ -2,3 +2,4 @@ GameMode.sublime-*
 server_log.txt
 logs/
 *.amx
+scriptfiles/config.json
