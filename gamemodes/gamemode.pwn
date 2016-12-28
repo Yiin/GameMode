@@ -31,6 +31,17 @@
 #include <sscanf2> // http://forum.sa-mp.com/showthread.php?t=570927
 
 /**
+ * Utils
+ */
+#include "..\gamemodes\utils\pawn.pwn"
+#include "..\gamemodes\utils\chat.pwn"
+#include "..\gamemodes\utils\dialogs.pwn"
+#include "..\gamemodes\utils\player.pwn"
+#include "..\gamemodes\utils\text.pwn"
+#include "..\gamemodes\utils\textdraws.pwn"
+#include "..\gamemodes\utils\time.pwn"
+
+/**
  * Testai
  */
 #define RUN_TESTS
@@ -49,6 +60,12 @@
 #include "..\gamemodes\database\hooks.pwn"
 #include "..\gamemodes\database\database.pwn"
 
+/**
+ * Authentication (Þaidëjø)
+ */
+#include "..\gamemodes\modules\auth\hooks.pwn"
+#include "..\gamemodes\modules\auth\messages.pwn"
+#include "..\gamemodes\modules\auth\auth.pwn"
+
 main() {
-	
 }

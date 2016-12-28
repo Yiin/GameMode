@@ -29,7 +29,7 @@
 #if !defined E_LOGLEVEL
 enum E_LOGLEVEL
 {
-	NONE = 0,
+	// NONE = 0,
 	DEBUG = 1,
 	INFO = 2,
 	WARNING = 4,
@@ -178,19 +178,19 @@ native cache_set_result(result_index);
 
 stock cache_num_rows()
 {
-	new row_count;
+	static row_count;
 	cache_get_row_count(row_count);
 	return row_count;
 }
 stock cache_num_fields()
 {
-	new field_count;
+	static field_count;
 	cache_get_field_count(field_count);
 	return field_count;
 }
 stock cache_num_results()
 {
-	new result_count;
+	static result_count;
 	cache_get_result_count(result_count);
 	return result_count;
 }
@@ -235,6 +235,20 @@ native cache_is_value_index_null(row_idx, column_idx, &bool:destination);
 native cache_get_value_name(row_idx, const column_name[], destination[], max_len = sizeof(destination));
 native cache_get_value_name_int(row_idx, const column_name[], &destination);
 native cache_get_value_name_float(row_idx, const column_name[], &Float:destination);
+
+stock ret_cache_get_value_name_int(row_idx, const column_name[]) {
+	static destination;
+	cache_get_value_name_int(row_idx, column_name, destination);
+	return destination;
+}
+#define cache_get_value_name_int ret_cache_get_value_name_int
+
+stock Float:ret_cache_get_value_name_float(row_idx, const column_name[]) {
+	static Float:destination;
+	cache_get_value_name_float(row_idx, column_name, destination);
+	return destination;
+}
+#define cache_get_value_name_float ret_cache_get_value_name_float
 /*
 native cache_get_value_name_bool(row_idx, const column_name[], &bool:destination);
 */

@@ -91,7 +91,9 @@ Variables:
 #endif
 
 // Global dialog text buffer
-new g_DialogText[1000];
+new g_DialogHeader[100];
+new g_DialogBody[2000];
+new g_DialogText[sizeof(g_DialogHeader) + sizeof(g_DialogBody)];
 
 // This is actually QUITE A LOT of data, I should maybe sort that out.
 static stock
@@ -102,7 +104,8 @@ static stock
 	YSI_g_sDialogMasters[MAX_DIALOGS] = {-1, ...},
 	YSI_g_sDialogInfo[MAX_DIALOGS][E_CALLBACK_DATA];
 new
-	YSI_g_sDialogCallFix[YSI_MAX_STRING];
+	YSI_g_InputText[YSI_MAX_STRING],
+	YSI_g_ListItem;
 
 /*stock Dialog_ObtainID()
 {
@@ -222,12 +225,22 @@ global Dialog_Set(playerid, dialogid)
 	return 1;
 }
 
-stock Dialog_ShowCallback(playerid, callback:callback, style, string:title[], string:caption[], string:button1[], string:button2[] = "", dialog = -1)
+stock Dialog_ShowCallback(playerid, callback:callback, style, string:title[], string:button1[], string:button2[] = "", dialog = -1, string:body[] = "")
 {
+	g_DialogText[0] = EOS;
+
+	if(isnull(body)) {
+		strcat(g_DialogText, g_DialogHeader);
+		strcat(g_DialogText, g_DialogBody);
+	}
+	else {
+		strcat(g_DialogText, body);
+	}
+
 	new
-		ret = Dialog_Show(playerid, style, title, caption, button1, button2, dialog),
+		ret = Dialog_Show(playerid, style, title, g_DialogText, button1, button2, dialog),
 		data[E_CALLBACK_DATA];
-	new x = Callback_Get(callback, data, _F<ii>);
+	new x = Callback_Get(callback, data, _F<i>);
 	P:2("Dialog_ShowCallback: Callback_Get() = %i", x);
 	if (x)
 	{
@@ -252,6 +265,7 @@ stock Dialog_Show(playerid, style, string:title[], string:caption[], string:butt
 		dialog = Dialog_ObtainID();
 		Dialog_Garbage(dialog);
 	}
+	YSI_g_ListItem = 0;
 	ShowPlayerDialog(playerid, dialog, style, title, caption, button1, button2);
 	Dialog_Set(playerid, dialog);
 	return dialog;
@@ -274,7 +288,6 @@ hook OnPlayerDisconnect(playerid, reason)
 remotefunc void:Dialog_SetMaster(dialogid, master)
 {
 	YSI_g_sDialogMasters[dialogid] = master;
-	//YSI_g_sDialogInfo[dialogid][E_CALLBACK_DATA_POINTER] = 0;
 }
 
 stock Dialog_GetMaster(dialogid)
@@ -286,7 +299,7 @@ stock Dialog_SetCallback(dialogid, callback:callback)
 {
 	new
 		data[E_CALLBACK_DATA];
-	if (Callback_Get(callback, data, _F<ii>))
+	if (Callback_Get(callback, data, _F<i>))
 	{
 		Dialog_SetCallbackData(dialogid, data);
 	}
@@ -313,28 +326,22 @@ hook OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		return 0;
 	}
 	P:5("Dialog_OnDialogResponse: master = %d, %d", YSI_g_sDialogMasters[dialogid], _@);
-//	if (YSI_g_sDialogMasters[dialogid] != _@)
-//	{
-//		return 0;
-//	}
-	YSI_g_sDialogCallFix[0] = EOS;
+
+	YSI_g_InputText[0] = EOS;
 	if(!isnull(inputtext)) {
-		strcat(YSI_g_sDialogCallFix, inputtext);
-		strreplace(YSI_g_sDialogCallFix, "%", "");
+		strcat(YSI_g_InputText, inputtext);
+		strreplace(YSI_g_InputText, "%", "");
 	}
 
-	/*print("before:");
-	print(YSI_g_sDialogCallFix);
-	print("after:");
-	print(YSI_g_sDialogCallFix);*/
+	YSI_g_ListItem = listitem;
+
 	// Dialogs close automaticaly.
 	if (Dialog_Set(playerid, -1))
 	{
 		P:5("OnDialogResponse: Not free");
 		if (YSI_g_sDialogInfo[dialogid][E_CALLBACK_DATA_POINTER])
 		{
-			//printf("Calling function at 0x%08x", YSI_g_sDialogInfo[dialogid][E_CALLBACK_DATA_POINTER]);
-			Callback_Call(YSI_g_sDialogInfo[dialogid], playerid, dialogid, response, listitem, inputtext);
+			Callback_Call(YSI_g_sDialogInfo[dialogid], response);
 			return 1;
 		}
 	}
@@ -348,36 +355,20 @@ hook OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		// Callback no longer needed.
 		if (dat[E_CALLBACK_DATA_POINTER])
 		{
-			//printf("Calling function at 0x%08x", dat[E_CALLBACK_DATA_POINTER]);
-			Callback_Call(dat, response, listitem);
+			Callback_Call(dat, response);
 			Callback_Release(dat);
 			return 1;
 		}
 	}
-	//Dialog_Set(playerid, -1);
 	return 0;
 }
 
-/*stock _ShowPlayerDialog(playerid, dialog, style, string:title[], string:caption[], string:button1[], string:button2[])
-{
-	Dialog_TryObtainID(dialog);
-	YSI_g_sDialogInfo[dialog][E_CALLBACK_DATA_POINTER] = 0;
-	ShowPlayerDialog(playerid, dialog, style, title, caption, button1, button2);
-	return 0;
+stock GetSelectedListItem() {
+	return YSI_g_ListItem;
 }
 
-#if defined _ALS_ShowPlayerDialog
-	#undef ShowPlayerDialog
-#else
-	#define _ALS_ShowPlayerDialog
-#endif
-#define ShowPlayerDialog _ShowPlayerDialog
-
-#define HidePlayerDialog Dialog_Hide*/
-
-/*stock HidePlayerDialog(playerid)
-{
-	ShowPlayerDialog(playerid, -1, 0, NULL, NULL, NULL, NULL);
-}*/
+stock GetInputText() {
+	return YSI_g_InputText;
+}
 
 #include "..\YSI_Core\y_master"

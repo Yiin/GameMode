@@ -192,7 +192,6 @@ stock DJSON_cache_init() {
  */
 stock DJSON_cache_close() {
 	db_close(DJSON_cache_db);
-	printf("fremove: %s", DJSON_cache_file_name);
 	fremove(DJSON_cache_file_name);
 }
 

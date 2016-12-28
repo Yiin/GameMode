@@ -4,22 +4,33 @@
 */
 
 // Called when a player is fully connected to the server.
-forward OnPlayerFullyConnected(playerid);
+// OnPlayerFullyConnected(playerid)
+#define ALS_DO_PlayerFullyConnected<%0> %0<PlayerFullyConnected,i>(end:playerid)
 
 public OnPlayerRequestClass(playerid, classid)
 {
+	if(IsPlayerNPC(playerid)) {
+		return 1;
+	}
+	
 	// Enables spectator mode. This will hide the class selection buttons.
 	TogglePlayerSpectating(playerid, true);
 	
-	// Call a timer to defer the function call. Setting camera info doesn't
-	// work after enabling spectator mode.
-	SetTimerEx("OnPlayerFullyConnected", 250, false, "i", playerid);
+	SetPVarInt(playerid, "noclass", 1);
 
 	#if defined CS_OnPlayerRequestClass
 	    return CS_OnPlayerRequestClass(playerid, classid);
 	#else
 	    return 1;
 	#endif
+}
+
+public OnPlayerStateChange(playerid, newstate, oldstate) {
+	if(GetPVarType(playerid, "noclass")) {
+		DeletePVar(playerid, "noclass");
+
+		call OnPlayerFullyConnected(playerid);
+	}
 }
 
 stock CS_SpawnPlayer(playerid)

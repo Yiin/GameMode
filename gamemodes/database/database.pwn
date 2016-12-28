@@ -12,6 +12,8 @@
 
 static MySQL:database;
 
+static DATABASE_CONFIG_FILE[] = "config/database.json";
+
 hook OnGameModeInit() { 
     mysql_log();
 
@@ -22,10 +24,10 @@ hook OnGameModeInit() {
         password[YSI_MAX_STRING]
     ;
 
-    config("mysql.host", host);
-    config("mysql.database", database_name);
-    config("mysql.user", user);
-    config("mysql.password", password);
+    config("mysql.host", host, .module = DATABASE_CONFIG_FILE);
+    config("mysql.database", database_name, .module = DATABASE_CONFIG_FILE);
+    config("mysql.user", user, .module = DATABASE_CONFIG_FILE);
+    config("mysql.password", password, .module = DATABASE_CONFIG_FILE);
 
     database = mysql_connect(host, user, password, database_name);
     
