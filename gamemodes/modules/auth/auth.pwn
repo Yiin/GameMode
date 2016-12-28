@@ -110,9 +110,7 @@ static login(playerid, Cache:cache, fails = 0) {
 					if(send) {
 						call OnPlRequestNewPassword(playerid);
 					}
-					else {
-						call OnPlayerLeaveServer(playerid);
-					}
+					call OnPlayerLeaveServer(playerid);
 					defer Kick(playerid);
 				}
 				SetDialogHeader("Naujo slaptaþodþio praðymas");
@@ -207,7 +205,7 @@ static register(playerid) {
 				ir [highlight]galimybæ 24 valandas nemokamai naudotis dviraèiø nuomos paslauga[].");
 			ShowDialog(playerid, using inline OnPlayerEnterEmail, DIALOG_STYLE_INPUT, "Registracija", "Iðsaugoti", "Iðeiti");
 		}
-		else {			
+		else {
 			inline ExitWarningResponse(stay) {
 				if(stay) {
 					register(playerid);

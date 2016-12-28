@@ -1,5 +1,6 @@
 {
     "api": {
+    	"url": "<insert server api url>",
     	"key": "<insert server api key>"
     }
 }

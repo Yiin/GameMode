@@ -23,7 +23,7 @@ config(key[], value[] = "", keyLength = sizeof key, valueLength = sizeof value, 
 	    DJSON_cache_ReloadFile(module);
 	}
 
-	if(!isnull(value) || valueLength > 1) {
+	if(valueLength > 1) {
 		format(value, valueLength, "%s", dj(isnull(module) ? configFileName : module, key));
 		return 1;
 	}

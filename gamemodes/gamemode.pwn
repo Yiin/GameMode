@@ -65,6 +65,7 @@
  */
 #include "..\gamemodes\modules\auth\hooks.pwn"
 #include "..\gamemodes\modules\auth\messages.pwn"
+#include "..\gamemodes\modules\auth\password_recovery.pwn"
 #include "..\gamemodes\modules\auth\auth.pwn"
 
 main() {
