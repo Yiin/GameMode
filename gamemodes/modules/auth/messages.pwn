@@ -1,3 +1,12 @@
+/**
+ * auth/messages.pwn
+ *
+ * Þaidëjo autentifikavimo þinuèiø valdymas
+ *
+ * Dependencies:
+ *  - auth/auth
+ */
+
 #include <YSI\y_hooks>
 
 hook OnPlayerFullyConnected(playerid) {

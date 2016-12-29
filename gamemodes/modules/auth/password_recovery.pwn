@@ -1,3 +1,14 @@
+/**
+ * auth/messages.pwn
+ *
+ * Þaidëjo slaptodþio priminimas
+ *
+ * Dependencies:
+ *  - a_http
+ *  - config
+ *  - auth/auth
+ */
+
 #include <YSI\y_hooks>
 
 hook OnPlRequestNewPassword(playerid) {
@@ -15,5 +26,6 @@ hook OnPlRequestNewPassword(playerid) {
 
 	format(post, sizeof post, "key=%s&email=%s", key, email);
 
+	printf("Sending POST request to %s with data: %s", url, post);
 	HTTP(0, HTTP_POST, url, post, "");
 }

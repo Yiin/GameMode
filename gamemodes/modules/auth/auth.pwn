@@ -1,3 +1,12 @@
+/**
+ * auth/auth.pwn
+ *
+ * Þaidëjo autentifikavimas
+ *
+ * Dependencies:
+ *  - a_mysql
+ */
+
 #include <YSI\y_hooks>
 
 /**
@@ -5,6 +14,7 @@
  */
 
 static s_PlayerAccountName[MAX_PLAYERS][MAX_PLAYER_NAME];
+static s_PlayerAccountID[MAX_PLAYERS];
 static s_PlayerEmail[MAX_PLAYERS][200];
 static s_StatusMessage[500];
 
@@ -16,6 +26,10 @@ stock GetPlayerAccountName(playerid, name[] = "", len = sizeof name) {
 	format(name, len, s_PlayerAccountName[playerid]);
 
 	return s_PlayerAccountName[playerid];
+}
+
+stock GetPlayerAccountID(playerid) {
+	return s_PlayerAccountID[playerid];
 }
 
 stock PlayerHasEmail(playerid) {
@@ -65,6 +79,14 @@ hook OnPlayerDisconnect(playerid, reason) {
 	if(GetPVarType(playerid, "cache")) {
 		cache_delete(Cache:GetPVarInt(playerid, "cache"));
 	}
+}
+
+hook OnPlayerLogin(playerid, user_id) {
+	s_PlayerAccountID[playerid] = user_id;
+}
+
+hook OnPlayerRegister(playerid, user_id) {
+	s_PlayerAccountID[playerid] = user_id;
 }
 
 /**
