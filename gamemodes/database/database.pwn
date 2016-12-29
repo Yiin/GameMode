@@ -1,7 +1,7 @@
 /**
- * config.pwn
+ * database.pwn
  *
- * Serverio konfiguracijos valdymas
+ * Duomenø bazë
  *
  * Dependencies:
  *  - config
@@ -10,9 +10,17 @@
 
 #include <YSI\y_hooks>
 
+/**
+ * Variables
+ */
+
 static MySQL:database;
 
 static DATABASE_CONFIG_FILE[] = "config/database.json";
+
+/**
+ * Events
+ */
 
 hook OnGameModeInit() { 
     mysql_log();
@@ -45,18 +53,28 @@ hook OnGameModeExit() {
     mysql_close(database);
 }
 
+/**
+ * Public methods
+ */
+
 stock MySQL:GetDatabase() {
     return database;
 }
+
+stock Cache:mysql_query_format(const _query[], va_args<>) {
+    static query[2000];
+    va_formatex(query, _, _query, va_start<1>);
+    return mysql_query(database, query);
+}
+#define mysql_query mysql_query_format
 
 stock mysql_count_in_table(table_name[], const where[], va_args<>) {
     static _where[500];
     va_formatex(_where, _, where, va_start<2>);
 
-    mysql_format(database, query, sizeof query, "SELECT * FROM %s %s", table_name, _where);
-    new Cache:cache = mysql_query(database, query);
+    new Cache:cache = mysql_query("SELECT * FROM %s %s", table_name, _where);
 
-    static count =: cache_num_rows();
+    new count = cache_num_rows();
     cache_delete(cache);
 
     return count;
@@ -68,10 +86,3 @@ stock mysql_exists_in_table(table_name[], const where[], va_args<>) {
 
     return mysql_count_in_table(table_name, _where) > 0;
 }
-
-stock Cache:mysql_query_format(const _query[], va_args<>) {
-    static query[2000];
-    va_formatex(query, _, _query, va_start<1>);
-    return mysql_query(database, query);
-}
-#define mysql_query mysql_query_format

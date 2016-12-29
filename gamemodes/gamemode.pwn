@@ -40,6 +40,7 @@
 #include "..\gamemodes\utils\text.pwn"
 #include "..\gamemodes\utils\textdraws.pwn"
 #include "..\gamemodes\utils\time.pwn"
+#include "..\gamemodes\utils\samp.pwn"
 
 /**
  * Testai
@@ -67,6 +68,27 @@
 #include "..\gamemodes\modules\auth\messages.pwn"
 #include "..\gamemodes\modules\auth\password_recovery.pwn"
 #include "..\gamemodes\modules\auth\auth.pwn"
+
+/**
+ * Þaidëjas
+ *
+ * Þaidëjas nëra veikëjas tik veikëjo pasirinkimo lange,
+ * todël ðitas modulis yra pavadintas player, o ne character,
+ * nes ið esmës jie beveik visada reiðkia tà patá, o kai nereiðkia,
+ * tai tam yra atskiras modulis character-selection.
+ */
+#include "..\gamemodes\modules\player\hooks.pwn"
+#include "..\gamemodes\modules\player\orm.pwn"
+#include "..\gamemodes\modules\player\skins.pwn"
+
+/**
+ * Veikëjo pasirinkimas
+ */
+#include "..\gamemodes\modules\character-selection\hooks.pwn"
+#include "..\gamemodes\modules\character-selection\definitions.pwn"
+#include "..\gamemodes\modules\character-selection\messages.pwn"
+#include "..\gamemodes\modules\character-selection\textdraws.pwn"
+#include "..\gamemodes\modules\character-selection\character_selection.pwn"
 
 main() {
 }
