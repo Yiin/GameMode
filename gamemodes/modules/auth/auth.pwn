@@ -15,12 +15,28 @@
 
 static s_PlayerAccountName[MAX_PLAYERS][MAX_PLAYER_NAME];
 static s_PlayerAccountID[MAX_PLAYERS];
+static s_PlayerHashedPassword[MAX_PLAYERS][129];
 static s_PlayerEmail[MAX_PLAYERS][200];
 static s_StatusMessage[500];
 
 /**
  * Public methods
  */
+
+stock ConfirmPlayerPassword(playerid, input_password[], bool:call_event_on_fail = true) {
+	static hashed_input_password[129];
+	WP_Hash(hashed_input_password, sizeof hashed_input_password, input_password);
+
+	if(strcmp(hashed_input_password, s_PlayerHashedPassword[playerid])) {
+		if(call_event_on_fail) {
+			call OnPlayerLoginFailed(playerid, 0);
+		}
+		return false;
+	}
+	else {
+		return true;
+	}
+}
 
 stock GetPlayerAccountName(playerid, name[] = "", len = sizeof name) {
 	format(name, len, s_PlayerAccountName[playerid]);
@@ -54,7 +70,7 @@ hook OnPlayerConnect(playerid) {
 	// iðsisaugom þaidëjo acc name
 	GetPlayerName(playerid, s_PlayerAccountName[playerid], MAX_PLAYER_NAME);
 
-	SetPVarInt(playerid, "cache", _:mysql_query("SELECT uid, email, password FROM users WHERE username = '%s'", s_PlayerAccountName[playerid]));
+	SetPVarInt(playerid, "cache", _:mysql_query("SELECT id, email, password FROM users WHERE username = '%s'", s_PlayerAccountName[playerid]));
 }
 
 hook OnPlayerFullyConnected(playerid) {
@@ -109,14 +125,10 @@ static login(playerid, Cache:cache, fails = 0) {
 	}
 	inline OnPlayerEnterPassword(response) {
 		if(response) {
-			static hashed_input_password[129];
-			WP_Hash(hashed_input_password, sizeof hashed_input_password, GetInputText());
+			cache_get_value_name(0, "password", s_PlayerHashedPassword[playerid]);
 
-			static hashed_real_password[129];
-			cache_get_value_name(0, "password", hashed_real_password);
-
-			if( ! strcmp(hashed_input_password, hashed_real_password)) {
-				new user_id = cache_get_value_name_int(0, "uid");
+			if(ConfirmPlayerPassword(playerid, GetInputText(), false)) {
+				new user_id = cache_get_value_name_int(0, "id");
 				cache_delete(cache);
 
 				call OnPlayerLogin(playerid, user_id);

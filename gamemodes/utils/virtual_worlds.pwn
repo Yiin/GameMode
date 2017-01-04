@@ -1,0 +1,1 @@
+#define VW_DEFAULT (0)

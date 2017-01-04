@@ -41,6 +41,7 @@
 #include "..\gamemodes\utils\textdraws.pwn"
 #include "..\gamemodes\utils\time.pwn"
 #include "..\gamemodes\utils\samp.pwn"
+#include "..\gamemodes\utils\virtual_worlds.pwn"
 
 /**
  * Testai
@@ -79,7 +80,11 @@
  */
 #include "..\gamemodes\modules\player\hooks.pwn"
 #include "..\gamemodes\modules\player\orm.pwn"
+#include "..\gamemodes\modules\player\position.pwn"
 #include "..\gamemodes\modules\player\skins.pwn"
+#include "..\gamemodes\modules\player\camera.pwn"
+#include "..\gamemodes\modules\player\state.pwn"
+#include "..\gamemodes\modules\player\fight.pwn"
 
 /**
  * Veikëjo pasirinkimas
@@ -88,7 +93,46 @@
 #include "..\gamemodes\modules\character-selection\definitions.pwn"
 #include "..\gamemodes\modules\character-selection\messages.pwn"
 #include "..\gamemodes\modules\character-selection\textdraws.pwn"
+#include "..\gamemodes\modules\character-selection\commands.pwn"
+#include "..\gamemodes\modules\character-selection\spawn.pwn"
 #include "..\gamemodes\modules\character-selection\character_selection.pwn"
 
 main() {
+}
+
+CMD:vw(playerid, params[]) {
+	new vw = strval(params);
+
+	SetPlayerVirtualWorld(playerid, vw);
+
+	M:P:I(playerid, "Your new virtual world: %i", vw);
+
+	return true;
+}
+
+CMD:add(playerid, params[]) {
+	new Float:x, Float:y, Float:z, Float:a;
+	GetPlayerPos(playerid, x, y, z);
+	GetPlayerFacingAngle(playerid, a);
+
+	new actorid = CreateActor(168, x, y, z, a);
+
+	SetActorVirtualWorld(actorid, GetPlayerVirtualWorld(playerid));
+
+	M:P:I(playerid, "Created actor: %i", actorid);
+
+	return true;
+}
+
+CMD:remove(playerid, params[]) {
+	new actorid = strval(params);
+
+	if(DestroyActor(actorid)) {
+		M:P:I(playerid, "Destroyed actor: %i", actorid);
+	}
+	else {
+		M:P:E(playerid, "Couldn't destroy actor: %i", actorid);
+	}
+
+	return true;
 }

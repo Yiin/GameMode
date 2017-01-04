@@ -17,6 +17,9 @@ hook OnPlayerFullyConnected(playerid) {
 
 hook OnPlayerLoginFailed(playerid, fails) {
 	switch(fails) {
+		case 0: {
+			M:P:E(playerid, "Ávestas slaptaþodis neteisingas!");
+		}
 		case 1: {
 			static const message[] = "Hm, panaðu, kad suklydai ávesdamas slaptaþodá, pamëgink dar kartà!";
 			AuthStatusMessage(message);
@@ -36,7 +39,7 @@ hook OnPlayerLoginFailed(playerid, fails) {
 			M:P:I(playerid, PlayerHasEmail(playerid) ? message[1] : message[2]);
 			M:P:I(playerid, message[3]);
 		}
-		default: {
+		case 3: {
 			static const message[][200] = {
 				"Well shit, panaðu, kad ir ne ðitas.",
 				"Galime atsiøsti naujà slaptaþodá el. paðtu [highlight]%s[] arba susisiek su administracija.",

@@ -9,7 +9,8 @@
 
 ClearChat(playerid, everything = true) {
 	for(new i, j = everything ? 50 : 16; i < j; i++) {
-		SendClientMessage(playerid, -1, " ");
+		// SendClientMessage(playerid, -1, " ");
+		SendClientMessage(playerid, -1, "DEBUG: CLEAR_CHAT"); break;
 	}
 }
 

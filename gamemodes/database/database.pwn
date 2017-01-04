@@ -68,6 +68,13 @@ stock Cache:mysql_query_format(const _query[], va_args<>) {
 }
 #define mysql_query mysql_query_format
 
+stock mysql_tquery_format(callback[] = "", identifier = 0, const _query[], va_args<>) {
+    static query[2000];
+    va_formatex(query, _, _query, va_start<3>);
+    return mysql_tquery(database, query, callback, "i", identifier);
+}
+#define mysql_tquery mysql_tquery_format
+
 stock mysql_count_in_table(table_name[], const where[], va_args<>) {
     static _where[500];
     va_formatex(_where, _, where, va_start<2>);

@@ -19,12 +19,9 @@ forward CharacterUpdatedAt(playerid, value = -1);
 
 static ORM:character_orm[MAX_PLAYERS];
 
+static user_id[MAX_PLAYERS];
 static character_id[MAX_PLAYERS];
 static name[MAX_PLAYERS][MAX_PLAYER_NAME];
-static Float:position_x[MAX_PLAYERS];
-static Float:position_y[MAX_PLAYERS];
-static Float:position_z[MAX_PLAYERS];
-static Float:position_a[MAX_PLAYERS];
 
 static created_at[MAX_PLAYERS];
 static updated_at[MAX_PLAYERS];
@@ -34,37 +31,59 @@ static updated_at[MAX_PLAYERS];
  */
 
 hook OnCreateCharacterORM(ORM:ormid, playerid) {
+	CharacterUserID(playerid, GetPlayerAccountID(playerid));
+	GetPlayerName(playerid, name[playerid]);
+
 	orm_addvar_int(ormid, character_id[playerid], "id");
-	orm_addvar_float(ormid, position_x[playerid], "x");
-	orm_addvar_float(ormid, position_y[playerid], "y");
-	orm_addvar_float(ormid, position_z[playerid], "z");
-	orm_addvar_float(ormid, position_a[playerid], "a");
-	orm_addvar_int(ormid, created_at[playerid], "created_at");
-	orm_addvar_int(ormid, updated_at[playerid], "updated_at");
+	orm_addvar_int(ormid, user_id[playerid], "user_id");
+
+	// Syncinam veikëjo duomenis su duomenø baze pagal veikëjo vardà
+	orm_addvar_string(ormid, name[playerid], MAX_PLAYER_NAME, "name");
 }
 
 hook OnCharacterDespawn(playerid, bool:update_position) {
 	SaveCharacter(playerid, .update_position = update_position);
 	
+	printf("OnCharacterDespawn %i: orm_destroy %i", playerid, _:CharacterORM(playerid));
 	orm_destroy(CharacterORM(playerid));
+}
+
+hook OnCharacterDataLoad(playerid) {
+	switch(orm_errno(CharacterORM(playerid))) 
+	{
+		case ERROR_OK: {
+			call OnCharacterDataLoaded(playerid);
+		}
+		case ERROR_NO_DATA: {
+			print("OnCharacterDataLoad: ERROR_NO_DATA");
+		}
+	}
 }
 
 /**
  * Public methods
  */
 
-stock LoadCharacter(playerid) {
-	GetPlayerName(playerid, name[playerid]);
-
-	new ORM:ormid = CharacterORM(playerid, orm_create("characters"));
-
-	// Syncinam veikëjo duomenis su duomenø baze pagal veikëjo vardà
-	orm_addvar_string(ormid, name[playerid], MAX_PLAYER_NAME, "name");
-	orm_setkey(ormid, "name");
+stock CreateCharacter(playerid) {
+	new ORM:ormid = orm_create("characters");
+	CharacterORM(playerid, ormid);
+	printf("CreateCharacter: ormid %i", _:CharacterORM(playerid));
 
 	call OnCreateCharacterORM(ormid, playerid);
 
-	orm_select(ormid, "OnPlayerDataLoad", "d", playerid);
+	orm_setkey(CharacterORM(playerid), "id");
+	orm_insert(CharacterORM(playerid), "OnCharacterCreated", "i", playerid);
+}
+
+stock LoadCharacter(playerid) {
+	new ORM:ormid = orm_create("characters");
+	CharacterORM(playerid, ormid);
+	printf("LoadCharacter: ormid %i", _:CharacterORM(playerid));
+
+	call OnCreateCharacterORM(ormid, playerid);
+
+	orm_setkey(ormid, "name");
+	orm_select(ormid, "OnCharacterDataLoad", "d", playerid);
 }
 
 stock SaveCharacter(playerid, bool:update_position = false) {
@@ -93,37 +112,11 @@ stock CharacterID(playerid, value = -1) {
 	return character_id[playerid];
 }
 
-stock CharacterPosition(playerid, &Float:x = 0.0, &Float:y = 0.0, &Float:z = 0.0, &Float:a = 0.0) {
-	if(x && y && z) {
-		position_x[playerid] = x;
-		position_y[playerid] = y;
-		position_z[playerid] = z;
+stock CharacterUserID(playerid, value = -1) {
+	if(value != -1) {
+		user_id[playerid] = value;
 	}
-	if(a) {
-		position_a[playerid] = a;
-	}
-	x = position_x[playerid];
-	y = position_y[playerid];
-	z = position_z[playerid];
-	a = position_a[playerid];
-}
-
-stock UpdateCharacterPosition(playerid) {
-	static Float:x, Float:y, Float:z, Float:a;
-
-	GetPlayerPos(playerid, x, y, z);
-	GetPlayerFacingAngle(playerid, a);
-
-	CharacterPosition(playerid, x, y, z, a);
-}
-
-stock SetCharacterPosition(playerid, &Float:x = 0.0, &Float:y = 0.0, &Float:z = 0.0, &Float:a = 0.0) {
-	CharacterPosition(playerid, x, y, z, a);
-
-	Streamer_UpdateEx(playerid, x, y, z);
-
-	SetPlayerPos(playerid, x, y, z);
-	SetPlayerFacingAngle(playerid, a);
+	return user_id[playerid];
 }
 
 stock CharacterCreatedAt(playerid, value = -1) {

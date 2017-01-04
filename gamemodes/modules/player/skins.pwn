@@ -18,6 +18,10 @@ hook OnCreateCharacterORM(ORM:ormid, playerid) {
 	orm_addvar_int(ormid, default_skin[playerid], "default_skin");
 }
 
+hook OnCharacterSpawn(playerid) {
+	SetPlayerSkin(playerid, current_skin[playerid]);
+}
+
 /**
  * Public methods
  */

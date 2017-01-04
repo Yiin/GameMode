@@ -3,6 +3,16 @@ timer DelayedKick[200](playerid) {
 }
 #define Kick_yT@ DelayedKick_yT@
 
+stock ReturnGetPlayerName(playerid, name[] = "", len = sizeof name) {
+	static ret[MAX_PLAYER_NAME];
+	GetPlayerName(playerid, ret, sizeof ret);
+
+	format(name, len, ret);
+
+	return ret;
+}
+#define GetPlayerName ReturnGetPlayerName
+
 stock InvalidNick(playerid, name_[])
 {
 	new name[MAX_PLAYER_NAME];

@@ -18,7 +18,7 @@ hook OnPlRequestNewPassword(playerid) {
 	static key[100];
 	static email[100];
 
-	config("api.base_url", url);
+	config("api.url", url);
 	config("api.key", key);
 	GetPlayerEmail(playerid, email);
 
