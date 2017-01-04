@@ -3,3 +3,4 @@ server_log.txt
 logs/
 *.amx
 scriptfiles/config.json
+djson-*.db
